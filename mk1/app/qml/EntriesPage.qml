@@ -13,7 +13,7 @@ Page {
         Image {
             anchors.fill: parent
             source: "assets/crusader_icon_blurred.png"
-            fillMode: Image.PreserveAspectCrop   // cubre todo sin deformarse
+            fillMode: Image.PreserveAspectFit    // se ve el casco entero; el hueco sobrante no se nota (mismo color que el fondo)
             opacity: 0.28                         // clave: bajo, si no, tapa el texto
         }
     }
@@ -44,7 +44,7 @@ Page {
                 implicitHeight: implicitWidth
                 background: Item {}
                 contentItem: Text {
-                    text: "⏻"
+                    text: "🔒"
                     color: Theme.foreground
                     opacity: 0.7
                     font.pixelSize: 18 * Window.window.scaleFactor
