@@ -1,0 +1,154 @@
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import QtQuick.Window
+import Crusader
+
+Page {
+    id: page
+    title: "Register"
+
+    // Fondo usando el Singleton
+    background: Rectangle {
+        color: Theme.background
+
+        Image {
+            anchors.fill: parent
+            source: "assets/crusader_icon.png"
+            fillMode: Image.PreserveAspectCrop   // cubre todo sin deformarse
+            opacity: 0.28                         // clave: bajo, si no, tapa el texto
+        }
+    }
+
+    ColumnLayout {
+        anchors.centerIn: parent
+        width: Math.min(parent.width * 0.85, 340)
+        spacing: 16
+
+        // Título con la tipografía y color de acento
+        Label {
+            text: "Register"
+            font.family: Theme.fontFamily
+            font.pixelSize: 24 * Window.window.scaleFactor
+            font.bold: true
+            font.letterSpacing: 6
+            color: Theme.accent
+            Layout.alignment: Qt.AlignHCenter
+        }
+
+        // Campo de entrada estilizado
+        TextField {
+            id: masterPasswordField
+            Layout.fillWidth: true
+            placeholderText: "Contraseña Maestra"
+            font.family: Theme.fontFamily
+            color: Theme.foreground
+            echoMode: showPasswordCheck.checked ? TextInput.Normal : TextInput.Password
+            focus: true
+            onTextChanged: errorLabel.text = ""
+            background: Rectangle {
+                color: "#161616"
+                border.color: masterPasswordField.activeFocus ? Theme.accent : "#333333"
+                border.width: 1
+                radius: 4
+            }
+        }
+
+        TextField {
+            id: masterPasswordFieldRepeat
+            Layout.fillWidth: true
+            placeholderText: "Repetir contraseña"
+            font.family: Theme.fontFamily
+            color: Theme.foreground
+            echoMode: showPasswordCheck.checked ? TextInput.Normal : TextInput.Password
+            focus: true
+            onTextChanged: errorLabel.text = ""
+            background: Rectangle {
+                color: "#161616"
+                border.color: masterPasswordFieldRepeat.activeFocus ? Theme.accent : "#333333"
+                border.width: 1
+                radius: 4
+            }
+        }
+
+        Label {
+            id: errorLabel
+            color: "#ff5555"
+            visible: text.length > 0
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            horizontalAlignment: Text.AlignHCenter
+            font.family: Theme.fontFamily
+            font.pixelSize: 12 * Window.window.scaleFactor
+        }
+
+        CheckBox {
+            id: showPasswordCheck
+            text: "Mostrar contraseña"
+            font.pixelSize: 12 * Window.window.scaleFactor
+            font.family: Theme.fontFamily
+
+            // 1. Personalización del texto
+            contentItem: Text {
+                text: showPasswordCheck.text
+                font: showPasswordCheck.font
+                color: Theme.accent
+                verticalAlignment: Text.AlignVCenter
+                leftPadding: showPasswordCheck.indicator.width + showPasswordCheck.spacing
+            }
+
+            // 2. Personalización del recuadro y del "check"
+            indicator: Rectangle {
+                implicitWidth: 16 * Window.window.scaleFactor
+                implicitHeight: 16 * Window.window.scaleFactor
+                x: showPasswordCheck.leftPadding
+                y: parent.height / 2 - height / 2
+                radius: 3
+                color: "#161616"
+                border.color: showPasswordCheck.checked ? Theme.accent : "#444444"
+
+                // Cuadrado interno cuando está marcado
+                Rectangle {
+                    width: 8 * Window.window.scaleFactor
+                    height: 8 * Window.window.scaleFactor
+                    anchors.centerIn: parent
+                    radius: 1
+                    color: Theme.accent
+                    visible: showPasswordCheck.checked
+                }
+            }
+        }
+
+        // Botón personalizado con color de acento
+        Button {
+            id: unlockButton
+            text: "REGISTRARSE"
+            Layout.fillWidth: true
+            onClicked: {
+                if (masterPasswordField.text.length === 0) {
+                    errorLabel.text = "La contraseña no puede estar vacía";
+                } else if (masterPasswordField.text !== masterPasswordFieldRepeat.text) {
+                    errorLabel.text = "Las contraseñas no coinciden";
+                } else if (vault.createVault(masterPasswordField.text)) {
+                    page.StackView.view.push("EntriesPage.qml");
+                } else {
+                    errorLabel.text = vault.errorMessage;
+                }
+            }
+
+            contentItem: Text {
+                text: unlockButton.text
+                font.family: Theme.fontFamily
+                font.bold: true
+                color: Theme.background // Texto oscuro sobre fondo acento
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+
+            background: Rectangle {
+                color: unlockButton.pressed ? Qt.darker(Theme.accent, 1.2) : Theme.accent
+                radius: 4
+            }
+        }
+    }
+}

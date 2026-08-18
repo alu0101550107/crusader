@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!--
+Copia propia (no la que genera Qt por defecto) para poder fijar el nombre
+de paquete y la etiqueta de la app de verdad. El resto es boilerplate
+obligatorio de la integracion de Qt con Android: no tocar sin comprobar
+contra una version nueva de Qt.
+
+A diferencia de Templar, no hace falta ni permiso de INTERNET (la app no
+usa red en absoluto) ni de almacenamiento (el archivo de la boveda vive en
+el almacenamiento privado de la app, ver QStandardPaths::AppDataLocation
+en VaultController.cpp).
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.crusader.app"
+    android:installLocation="auto"
+    android:versionCode="1"
+    android:versionName="0.1">
+    <application
+        android:name="org.qtproject.qt.android.bindings.QtApplication"
+        android:hardwareAccelerated="true"
+        android:label="Crusader"
+        android:allowBackup="true"
+        android:fullBackupOnly="false">
+        <activity
+            android:name="org.qtproject.qt.android.bindings.QtActivity"
+            android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density"
+            android:label="Crusader"
+            android:launchMode="singleTop"
+            android:screenOrientation="unspecified"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="crusader_app" />
+
+            <meta-data
+                android:name="android.app.arguments"
+                android:value="" />
+        </activity>
+    </application>
+</manifest>

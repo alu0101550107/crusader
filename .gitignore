@@ -1,0 +1,11 @@
+# Directorios de build de CMake (out-of-source siempre)
+build/
+build-*/
+
+# Logs sueltos
+*.log
+
+# IDE
+.vscode/
+.idea/
+compile_commands.json
