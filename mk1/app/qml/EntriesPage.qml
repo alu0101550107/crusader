@@ -12,8 +12,8 @@ Page {
 
         Image {
             anchors.fill: parent
-            source: "assets/crusader_icon_blurred.png"
-            fillMode: Image.PreserveAspectFit    // se ve el casco entero; el hueco sobrante no se nota (mismo color que el fondo)
+            source: "assets/crusader_phone_background_blurred.png"
+            fillMode: Image.PreserveAspectCrop   // cubre todo sin deformarse
             opacity: 0.28                         // clave: bajo, si no, tapa el texto
         }
     }
@@ -36,6 +36,22 @@ Page {
                 font.pixelSize: 16 * Window.window.scaleFactor
                 color: Theme.foreground
                 Layout.fillWidth: true
+            }
+
+            ToolButton {
+                id: settingsButton
+                implicitWidth: 36 * Window.window.scaleFactor
+                implicitHeight: implicitWidth
+                background: Item {}
+                contentItem: Text {
+                    text: "⚙️"
+                    color: Theme.foreground
+                    opacity: 0.7
+                    font.pixelSize: 18 * Window.window.scaleFactor
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+                onClicked: page.StackView.view.push("SettingsPage.qml")
             }
 
             ToolButton {

@@ -55,8 +55,11 @@ qt6_add_qml_module(crusader_app
     qml/EntriesPage.qml
     qml/AddEntryPage.qml
     qml/EntryDetailPage.qml
+    qml/SettingsPage.qml
+    qml/ColorPickerDialog.qml
     qml/theme/Theme.qml
   RESOURCES
     qml/assets/crusader_icon.png
-    qml/assets/crusader_icon_blurred.png
+    qml/assets/crusader_phone_background.png
+    qml/assets/crusader_phone_background_blurred.png
 )

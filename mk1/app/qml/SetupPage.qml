@@ -14,8 +14,8 @@ Page {
 
         Image {
             anchors.fill: parent
-            source: "assets/crusader_icon.png"
-            fillMode: Image.PreserveAspectFit    // se ve el casco entero; el hueco sobrante no se nota (mismo color que el fondo)
+            source: "assets/crusader_phone_background.png"
+            fillMode: Image.PreserveAspectCrop   // cubre todo sin deformarse
             opacity: 0.28                         // clave: bajo, si no, tapa el texto
         }
     }
