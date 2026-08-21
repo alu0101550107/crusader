@@ -79,10 +79,34 @@ Page {
         }
     }
 
+    TextField {
+        id: searchField
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.margins: 16 * Window.window.scaleFactor
+        placeholderText: "🔍 Buscar por nombre o usuario"
+        font.family: Theme.fontFamily
+        color: Theme.foreground
+        onTextChanged: vault.entries.filterText = text
+        background: Rectangle {
+            color: "#161616"
+            border.color: searchField.activeFocus ? Theme.accent : "#333333"
+            border.width: 1
+            radius: 4
+        }
+    }
+
     ListView {
         id: entriesList
-        anchors.fill: parent
-        anchors.margins: 16 * Window.window.scaleFactor
+        anchors.top: searchField.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.topMargin: 10 * Window.window.scaleFactor
+        anchors.leftMargin: 16 * Window.window.scaleFactor
+        anchors.rightMargin: 16 * Window.window.scaleFactor
+        anchors.bottomMargin: 16 * Window.window.scaleFactor
         spacing: 10 * Window.window.scaleFactor
         clip: true
         model: vault.entries
@@ -163,7 +187,7 @@ Page {
         width: parent.width * 0.7
         horizontalAlignment: Text.AlignHCenter
         wrapMode: Text.WordWrap
-        text: "Todavía no tienes ninguna cuenta guardada.\nPulsa + para añadir la primera."
+        text: searchField.text.length > 0 ? "Ninguna cuenta coincide con \"" + searchField.text + "\"." : "Todavía no tienes ninguna cuenta guardada.\nPulsa + para añadir la primera."
         color: Theme.foreground
         opacity: 0.5
         font.family: Theme.fontFamily

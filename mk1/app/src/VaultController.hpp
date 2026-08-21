@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "EntryFilterProxyModel.hpp"
 #include "PasswordEntryListModel.hpp"
 #include "crusader/PasswordEntry.hpp"
 
@@ -19,9 +20,11 @@ class VaultController : public QObject {
   Q_PROPERTY(bool isUnlocked READ isUnlocked NOTIFY isUnlockedChanged)
   Q_PROPERTY(bool vaultExists READ vaultExists NOTIFY vaultExistsChanged)
   Q_PROPERTY(QString errorMessage READ errorMessage NOTIFY errorMessageChanged)
-  // QObject* (no PasswordEntryListModel* directo): es lo que QML/ListView
-  // esperan para usarlo como "model" sin tener que registrar
-  // PasswordEntryListModel como tipo QML aparte.
+  // QObject* (no un tipo concreto): es lo que QML/ListView esperan para
+  // usarlo como "model" sin tener que registrar ningun tipo QML aparte.
+  // Expone el proxy de filtrado (ver EntryFilterProxyModel), no
+  // entriesModel_ directamente -- QML lee/escribe vault.entries.filterText
+  // para buscar, y el ListView ve las filas ya filtradas sin enterarse.
   Q_PROPERTY(QObject* entries READ entriesModel CONSTANT)
 
  public:
@@ -30,7 +33,7 @@ class VaultController : public QObject {
   bool isUnlocked() const { return isUnlocked_; }
   bool vaultExists() const;
   QString errorMessage() const { return errorMessage_; }
-  QObject* entriesModel() { return &entriesModel_; }
+  QObject* entriesModel() { return &entriesProxy_; }
 
   // Crea una boveda nueva (vacia) y la deja desbloqueada. Falla si ya
   // existe una -- usar unlock() en ese caso.
@@ -77,6 +80,7 @@ class VaultController : public QObject {
 
   QString vaultPath_;
   PasswordEntryListModel entriesModel_;
+  EntryFilterProxyModel entriesProxy_;
   std::vector<crusader::PasswordEntry> entries_;
   // Solo vive en memoria mientras la boveda esta desbloqueada -- hace
   // falta guardarla (no solo la clave derivada) porque cada persist()

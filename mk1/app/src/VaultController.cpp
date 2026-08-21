@@ -19,6 +19,8 @@ VaultController::VaultController(QObject* parent) : QObject(parent) {
   QString dir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
   QDir().mkpath(dir);
   vaultPath_ = dir + "/crusader.vault";
+
+  entriesProxy_.setSourceModel(&entriesModel_);
 }
 
 bool VaultController::vaultExists() const {
