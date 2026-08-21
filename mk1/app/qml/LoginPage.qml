@@ -20,6 +20,21 @@ Page {
         }
     }
 
+    Connections {
+        target: biometric
+        function onUnlockFinished(success, password, errorMessage) {
+            if (success) {
+                if (vault.unlock(password)) {
+                    page.StackView.view.push("EntriesPage.qml");
+                } else {
+                    errorLabel.text = vault.errorMessage;
+                }
+            } else if (errorMessage !== "Cancelado") {
+                errorLabel.text = errorMessage;
+            }
+        }
+    }
+
     ColumnLayout {
         anchors.centerIn: parent
         width: Math.min(parent.width * 0.85, 340)
@@ -126,6 +141,31 @@ Page {
 
             background: Rectangle {
                 color: unlockButton.pressed ? Qt.darker(Theme.accent, 1.2) : Theme.accent
+                radius: 4
+            }
+        }
+
+        // Secundario: outline, como "Generar contraseña segura" en
+        // AddEntryPage.qml -- DESBLOQUEAR sigue siendo la accion principal.
+        Button {
+            id: biometricButton
+            text: "USAR HUELLA"
+            Layout.fillWidth: true
+            visible: biometric.available && biometric.enabled
+            onClicked: biometric.unlock()
+
+            contentItem: Text {
+                text: biometricButton.text
+                font.family: Theme.fontFamily
+                font.pixelSize: 12 * Window.window.scaleFactor
+                color: Theme.accent
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+            background: Rectangle {
+                color: biometricButton.pressed ? "#1c1c1c" : "transparent"
+                border.color: Theme.accent
+                border.width: 1
                 radius: 4
             }
         }

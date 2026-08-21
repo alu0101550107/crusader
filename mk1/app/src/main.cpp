@@ -4,6 +4,7 @@
 #include <QQmlContext>
 #include <QQuickStyle>
 
+#include "BiometricBridge.hpp"
 #include "VaultController.hpp"
 #include "crusader/VaultCrypto.hpp"
 
@@ -31,9 +32,11 @@ int main(int argc, char* argv[]) {
   app.setWindowIcon(QIcon(QStringLiteral(":/qt/qml/Crusader/qml/assets/crusader_icon.png")));
 
   crusader::gui::VaultController vault;
+  crusader::gui::BiometricBridge biometric;
 
   QQmlApplicationEngine engine;
   engine.rootContext()->setContextProperty("vault", &vault);
+  engine.rootContext()->setContextProperty("biometric", &biometric);
 
   QObject::connect(
       &engine, &QQmlApplicationEngine::objectCreationFailed, &app,

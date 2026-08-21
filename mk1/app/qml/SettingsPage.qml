@@ -64,6 +64,79 @@ Page {
         }
     }
 
+    // Se pide la contraseña maestra antes de activar la huella porque
+    // BiometricBridge.enable() necesita cifrarla con la clave del
+    // Keystore -- ver BiometricHelper.java.
+    Dialog {
+        id: biometricPasswordDialog
+        modal: true
+        anchors.centerIn: parent
+        width: Math.min(parent ? parent.width - 40 : 300, 300)
+
+        background: Rectangle {
+            color: Theme.background
+            border.color: Theme.accent
+            border.width: 1
+            radius: 4
+        }
+
+        header: Label {
+            text: "Confirma tu contraseña maestra"
+            color: Theme.accent
+            font.bold: true
+            font.family: Theme.fontFamily
+            wrapMode: Text.WordWrap
+            padding: 12
+        }
+
+        contentItem: TextField {
+            id: biometricPasswordField
+            placeholderText: "Contraseña maestra"
+            echoMode: TextInput.Password
+            font.family: Theme.fontFamily
+            color: Theme.foreground
+            background: Rectangle {
+                color: "#161616"
+                border.color: biometricPasswordField.activeFocus ? Theme.accent : "#333333"
+                border.width: 1
+                radius: 4
+            }
+        }
+
+        footer: RowLayout {
+            width: biometricPasswordDialog.width
+            spacing: 8
+
+            Button {
+                text: "Cancelar"
+                Layout.fillWidth: true
+                Layout.margins: 8
+                onClicked: biometricPasswordDialog.reject()
+            }
+            Button {
+                text: "Confirmar"
+                Layout.fillWidth: true
+                Layout.margins: 8
+                onClicked: biometricPasswordDialog.accept()
+            }
+        }
+
+        onAccepted: {
+            biometric.enable(biometricPasswordField.text);
+            biometricPasswordField.text = "";
+        }
+        onRejected: biometricPasswordField.text = ""
+        onOpened: biometricPasswordField.forceActiveFocus()
+    }
+
+    Connections {
+        target: biometric
+        function onEnableFinished(success, errorMessage) {
+            if (!success)
+                biometricErrorLabel.text = errorMessage;
+        }
+    }
+
     component ColorRow: RowLayout {
         property string label: ""
         property color swatchColor: "white"
@@ -149,6 +222,62 @@ Page {
                 border.width: 1
                 radius: 4
             }
+        }
+
+        // Oculto por completo si no hay hardware/huellas registradas (o en
+        // escritorio, donde biometric.available siempre es false -- ver
+        // BiometricBridge.cpp).
+        Label {
+            text: "SEGURIDAD"
+            visible: biometric.available
+            color: Theme.accent
+            font.family: Theme.fontFamily
+            font.bold: true
+            font.pixelSize: 12 * Window.window.scaleFactor
+            Layout.topMargin: 8 * Window.window.scaleFactor
+        }
+
+        RowLayout {
+            visible: biometric.available
+            Layout.fillWidth: true
+
+            Label {
+                text: "Desbloqueo con huella"
+                color: Theme.foreground
+                font.family: Theme.fontFamily
+                font.pixelSize: 13 * Window.window.scaleFactor
+                Layout.fillWidth: true
+            }
+
+            Switch {
+                id: biometricSwitch
+                checked: biometric.enabled
+                onClicked: {
+                    // El clic ya cambio "checked" localmente y rompio el
+                    // binding -- se restaura de inmediato para que el
+                    // interruptor siempre refleje biometric.enabled de
+                    // verdad, y la accion de activar/desactivar depende
+                    // del estado anterior, no del visual a medio cambiar.
+                    var wasEnabled = biometric.enabled;
+                    checked = Qt.binding(function () {
+                        return biometric.enabled;
+                    });
+                    if (wasEnabled)
+                        biometric.disable();
+                    else
+                        biometricPasswordDialog.open();
+                }
+            }
+        }
+
+        Label {
+            id: biometricErrorLabel
+            visible: text.length > 0
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            color: "#ff5555"
+            font.family: Theme.fontFamily
+            font.pixelSize: 12 * Window.window.scaleFactor
         }
     }
 }

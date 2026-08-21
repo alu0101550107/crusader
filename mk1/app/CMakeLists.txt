@@ -20,6 +20,7 @@ qt6_add_executable(crusader_app
   src/main.cpp
   src/VaultController.cpp
   src/PasswordEntryListModel.cpp
+  src/BiometricBridge.cpp
 )
 target_link_libraries(crusader_app PRIVATE
   crusader_core

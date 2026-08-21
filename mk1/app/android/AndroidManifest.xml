@@ -8,13 +8,15 @@ contra una version nueva de Qt.
 A diferencia de Templar, no hace falta ni permiso de INTERNET (la app no
 usa red en absoluto) ni de almacenamiento (el archivo de la boveda vive en
 el almacenamiento privado de la app, ver QStandardPaths::AppDataLocation
-en VaultController.cpp).
+en VaultController.cpp). USE_BIOMETRIC si hace falta (normal, no peligroso,
+no requiere pedirlo en tiempo de ejecucion) para BiometricHelper.java.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.crusader.app"
     android:installLocation="auto"
     android:versionCode="1"
     android:versionName="0.1">
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <application
         android:name="org.qtproject.qt.android.bindings.QtApplication"
         android:hardwareAccelerated="true"
