@@ -25,7 +25,7 @@ Page {
         function onUnlockFinished(success, password, errorMessage) {
             if (success) {
                 if (vault.unlock(password)) {
-                    page.StackView.view.push("EntriesPage.qml");
+                    page.StackView.view.replace(null, "EntriesPage.qml");
                 } else {
                     errorLabel.text = vault.errorMessage;
                 }
@@ -124,7 +124,7 @@ Page {
             Layout.fillWidth: true
             onClicked: {
                 if (vault.unlock(masterPasswordField.text)) {
-                    page.StackView.view.push("EntriesPage.qml");
+                    page.StackView.view.replace(null, "EntriesPage.qml");
                 } else {
                     errorLabel.text = vault.errorMessage;
                 }

@@ -26,6 +26,20 @@ ApplicationWindow {
     title: "Crusader"
     color: Theme.background
 
+    // Gesto/boton "atras" del sistema en Android: por defecto cierra la
+    // app entera. Si hay algo debajo en la pila, en vez de eso se hace
+    // pop() -- exactamente igual que si hubieras pulsado el boton "<" de
+    // la propia pagina. Con la pila a nivel 1 (login/lista principal, que
+    // es un estado "raiz" tras cada replace(null, ...) -- ver
+    // LoginPage.qml, SetupPage.qml, EntriesPage.qml, AddEntryPage.qml) se
+    // deja el comportamiento normal de Android (minimizar/cerrar la app).
+    onClosing: close => {
+        if (stackView.depth > 1) {
+            close.accepted = false;
+            stackView.pop();
+        }
+    }
+
     StackView {
         id: stackView
         anchors.fill: parent

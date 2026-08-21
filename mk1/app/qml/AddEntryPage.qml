@@ -67,9 +67,11 @@ Page {
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                 }
-                onClicked: {
-                    page.StackView.view.replace("EntriesPage.qml");
-                }
+                // pop() (no un replace fijo a EntriesPage): esta pagina se
+                // llega tanto desde EntriesPage (nueva entrada) como desde
+                // EntryDetailPage (editar) -- pop() vuelve a la que
+                // corresponda en cada caso.
+                onClicked: page.StackView.view.pop()
             }
         }
     }
@@ -309,7 +311,11 @@ Page {
             onClicked: {
                 var success = editingEntryId.length > 0 ? vault.updateEntry(editingEntryId, nameField.text, usernameField.text, passwordField.text, urlField.text, notesField.text) : vault.addEntry(nameField.text, usernameField.text, passwordField.text, urlField.text, notesField.text);
                 if (success) {
-                    page.StackView.view.replace("EntriesPage.qml");
+                    // target: null vacia la pila entera -- si veniamos de
+                    // editar (EntriesPage -> EntryDetailPage -> aqui), no
+                    // deja el EntryDetailPage viejo (con los datos de
+                    // antes de editar) enterrado debajo.
+                    page.StackView.view.replace(null, "EntriesPage.qml");
                 } else {
                     errorLabel.text = vault.errorMessage;
                 }

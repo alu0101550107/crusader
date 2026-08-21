@@ -130,7 +130,7 @@ Page {
                 } else if (masterPasswordField.text !== masterPasswordFieldRepeat.text) {
                     errorLabel.text = "Las contraseñas no coinciden";
                 } else if (vault.createVault(masterPasswordField.text)) {
-                    page.StackView.view.push("EntriesPage.qml");
+                    page.StackView.view.replace(null, "EntriesPage.qml");
                 } else {
                     errorLabel.text = vault.errorMessage;
                 }

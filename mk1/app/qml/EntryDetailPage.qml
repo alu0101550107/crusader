@@ -84,9 +84,7 @@ Page {
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                 }
-                onClicked: {
-                    page.StackView.view.replace("EntriesPage.qml");
-                }
+                onClicked: page.StackView.view.pop()
             }
         }
     }

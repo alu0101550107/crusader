@@ -69,7 +69,11 @@ Page {
                 }
                 onClicked: {
                     vault.lock();
-                    page.StackView.view.replace("LoginPage.qml");
+                    // target: null vacia la pila entera, no solo esta
+                    // pagina -- al bloquear no debe quedar nada enterrado
+                    // debajo (detalle de una entrada, formulario a medio
+                    // rellenar) accesible con el boton "atras".
+                    page.StackView.view.replace(null, "LoginPage.qml");
                 }
             }
         }
