@@ -72,6 +72,22 @@ Page {
             }
 
             ToolButton {
+                id: deleteButton
+                implicitWidth: 36 * Window.window.scaleFactor
+                implicitHeight: implicitWidth
+                background: Item {}
+                contentItem: Text {
+                    text: "🗑️"
+                    color: "#ff5555"
+                    opacity: 0.85
+                    font.pixelSize: 18 * Window.window.scaleFactor
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+                onClicked: deleteConfirmDialog.open()
+            }
+
+            ToolButton {
                 id: backButton
                 implicitWidth: 36 * Window.window.scaleFactor
                 implicitHeight: implicitWidth
@@ -89,6 +105,91 @@ Page {
         }
     }
 
+    Dialog {
+        id: deleteConfirmDialog
+        modal: true
+        anchors.centerIn: parent
+        width: Math.min(parent ? parent.width - 40 : 300, 300)
+
+        background: Rectangle {
+            color: Theme.background
+            border.color: "#ff5555"
+            border.width: 1
+            radius: 4
+        }
+
+        header: Label {
+            text: "¿Eliminar esta entrada?"
+            color: "#ff5555"
+            font.bold: true
+            font.family: Theme.fontFamily
+            wrapMode: Text.WordWrap
+            padding: 12
+        }
+
+        contentItem: Label {
+            text: (page.entry.name || "Esta entrada") + " se borrará para siempre. Esta acción no se puede deshacer."
+            color: Theme.foreground
+            font.family: Theme.fontFamily
+            font.pixelSize: 12 * Window.window.scaleFactor
+            wrapMode: Text.WordWrap
+        }
+
+        footer: RowLayout {
+            width: deleteConfirmDialog.width
+            spacing: 8
+
+            Button {
+                id: cancelDeleteButton
+                text: "Cancelar"
+                Layout.fillWidth: true
+                Layout.margins: 8
+                onClicked: deleteConfirmDialog.reject()
+                contentItem: Text {
+                    text: cancelDeleteButton.text
+                    color: Theme.foreground
+                    font.family: Theme.fontFamily
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+                background: Rectangle {
+                    color: "transparent"
+                    border.color: "#444444"
+                    border.width: 1
+                    radius: 4
+                }
+            }
+            Button {
+                id: confirmDeleteButton
+                text: "Eliminar"
+                Layout.fillWidth: true
+                Layout.margins: 8
+                onClicked: deleteConfirmDialog.accept()
+                contentItem: Text {
+                    text: confirmDeleteButton.text
+                    color: Theme.background
+                    font.family: Theme.fontFamily
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+                background: Rectangle {
+                    color: "#ff5555"
+                    radius: 4
+                }
+            }
+        }
+
+        onAccepted: {
+            // target: null vacia la pila entera -- una vez borrada, no debe
+            // quedar la propia pagina de detalle (de una entrada que ya no
+            // existe) accesible con el boton "atras".
+            if (vault.removeEntry(page.entryId)) {
+                page.StackView.view.replace(null, "EntriesPage.qml");
+            }
+        }
+    }
+
     // Helper invisible para copiar al portapapeles -- QML no tiene una
     // funcion Clipboard.setText() directa, pero cualquier TextEdit sabe
     // copiar su seleccion, asi que se usa uno oculto como intermediario.
@@ -99,6 +200,51 @@ Page {
             clipboardHelper.text = text;
             clipboardHelper.selectAll();
             clipboardHelper.copy();
+        }
+    }
+
+    // Aviso breve de que la copia funciono -- z alto y ultimo hijo de la
+    // Page para quedar por encima de todo lo demas. opacity (no visible a
+    // secas) para que el fade de entrada/salida se anime.
+    Rectangle {
+        id: toast
+        anchors.bottom: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottomMargin: 32 * Window.window.scaleFactor
+        z: 1000
+        radius: 8
+        color: "#1c1c1c"
+        border.color: Theme.accent
+        border.width: 1
+        opacity: 0
+        visible: opacity > 0
+        width: toastLabel.implicitWidth + 32 * Window.window.scaleFactor
+        height: toastLabel.implicitHeight + 18 * Window.window.scaleFactor
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 200
+            }
+        }
+
+        function show(message) {
+            toastLabel.text = message;
+            opacity = 1;
+            toastTimer.restart();
+        }
+
+        Timer {
+            id: toastTimer
+            interval: 1500
+            onTriggered: toast.opacity = 0
+        }
+
+        Label {
+            id: toastLabel
+            anchors.centerIn: parent
+            color: Theme.accent
+            font.family: Theme.fontFamily
+            font.pixelSize: 12 * Window.window.scaleFactor
         }
     }
 
@@ -220,7 +366,10 @@ Page {
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
                             }
-                            onClicked: clipboardHelper.copyText(page.entry.username || "")
+                            onClicked: {
+                                clipboardHelper.copyText(page.entry.username || "");
+                                toast.show("Usuario copiado");
+                            }
                         }
                     }
 
@@ -271,7 +420,10 @@ Page {
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
                             }
-                            onClicked: clipboardHelper.copyText(page.entry.password || "")
+                            onClicked: {
+                                clipboardHelper.copyText(page.entry.password || "");
+                                toast.show("Contraseña copiada");
+                            }
                         }
                     }
                 }
